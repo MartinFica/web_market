@@ -71,10 +71,14 @@
         return $sales;
     }
 
-    // READY
+    // NOT ready
     function findProduct($product_id){
         global $DB;
-        $product = $DB->get_record('product', ['id' => $product_id]); //select*
+
+        $product_user = $DB->get_record('product', ['id' => $product_id]);
+        $email = $DB->get_record('user',['id' => $product_user->user_id],$email = 'email');
+
+        $product = 
 
         return $product;
     }
@@ -160,7 +164,7 @@
 }
 
     // Revisar
-    function retornarVistaProduct($product_id, $url){
+    function comprarProducto($product_id, $url){
 
         if($url == 1){
             $url= '/local/web_market/index.php';
@@ -170,6 +174,7 @@
         }
 
         $product = findProduct($product_id);
+        $email = $DB->get_record('user', ['email' => $product->user_id]);
         echo
             '<table style="width:50%">
               <tr>
@@ -181,8 +186,20 @@
                 <td>'.$product->description.'</td>
             </tr>
               <tr>
-                <td rowspan="2"><strong>Date put on sale</strong></td>
+                <td><strong>Date put on sale</strong></td>
                 <td>'.$produt->date.'</td>
+              </tr>
+              <tr>
+                <td><strong>Price</strong></td>
+                <td>'.$product->price.'</td>
+              </tr>
+             <tr>
+                <td><strong>Owner</strong></td>
+                <td>'.$product->username.'</td>
+              </tr>
+             <tr>
+                <td rowspan="2"><strong>Email</strong></td>
+                <td>'.$product->email.'</td>
               </tr>
             </table> 
             <br>

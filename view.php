@@ -49,6 +49,6 @@
 
     echo $OUTPUT->header();
 
-    listaMISproductos($product_id, $back_url);
+    comprarProducto($product_id, $back_url);
 
     echo $OUTPUT->footer();
