@@ -1,6 +1,6 @@
 <?php
 
-    // Revisar
+    // Ready? No guarda bn los datos
     function insertRecord($name, $description, $price, $quantity){
         global $DB, $USER;
         $record = new stdClass();
@@ -8,8 +8,8 @@
         $record->description = $description;
         $record->price = $price;
         $record->quantity = $quantity;
-        $record->fecha_creacion = date('Y-m-d H:i');
-        $record->id_user = $USER->id;
+        $record->date = date('Y-m-d H:i');
+        $record->user_id = $USER->id;
         // Insert register
         $DB->insert_record('product', $record);
     }

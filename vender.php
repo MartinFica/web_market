@@ -56,7 +56,7 @@
             $action = 'view';
         }
         else if ($data = $addForm->get_data()) {
-            //In this case you process validated data. $mform->get_data() returns data posted in form.
+
             insertRecord($data->name, $data->description, $data->price, $data->quantity , $USER->id, $DB);
             $action = 'view';
         }
