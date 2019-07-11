@@ -7,10 +7,17 @@
 
  
  /**
-local/web_market.php
+local/index.php
 */
 
-$string["title"] = "Apuntes UAI";
-$string["heading"] = "Apuntes UAI";
-
-
+$string['pluginname'] = "Market Place UAI";
+$string["title"] = "Mercado UAI";
+$string["heading"] = "Mercado UAI";
+$string['market_place'] = 'HTML';
+$string['ventas'] = 'En Venta';
+$string['mis_ventas'] = 'Mis Ventas';
+$string['description'] = "Descripción";
+$string['button1'] = 'Enviar';
+$string['name'] = 'Nombre';
+$string['price'] = 'Precio ($)';
+$string['quantity'] = 'Cantidad';

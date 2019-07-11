@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/web_market/db" VERSION="20190710" COMMENT="XMLDB file for Moodle local/web_market"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="product" COMMENT="table for products: id, owner, type, day added, price">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="name of the product"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="description of the product"/>
+        <FIELD NAME="price" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="price of the product"/>
+        <FIELD NAME="quantity" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="how many of the product does the student have for sale"/>
+        <FIELD NAME="date" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="date of when the product was put on sale"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="student who owns the product"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="product" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="user_id" TYPE="foreign" FIELDS="user_id" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="sale" COMMENT="table for sales: product, student buyer, detalis">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="id of the product in sale"/>
+        <FIELD NAME="sale_status" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id" COMMENT="number of the sale"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="details" COMMENT="details for the sale, includes: sale_id, quantity sold, total sold">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sale_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="product_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="quantity" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="quantities sold"/>
+        <FIELD NAME="datesold" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="sale_id" TYPE="foreign" FIELDS="sale_id" REFTABLE="sale" REFFIELDS="id"/>
+        <KEY NAME="product_id" TYPE="foreign" FIELDS="product_id" REFTABLE="product" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

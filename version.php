@@ -29,4 +29,4 @@
 defined('MOODLE_INTERNAL') || die();
 $plugin->pluginname = "local_web_market";
 $plugin->component = 'local_web_market';
-$plugin->version   = '2019070900';
+$plugin->version   = '2019071001';

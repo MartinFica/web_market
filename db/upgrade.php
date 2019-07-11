@@ -47,9 +47,135 @@
 function xmldb_local_web_market_upgrade($oldversion) {
 	global $CFG, $DB;
 
-	$dbman = $DB->get_manager();	
+	$dbman = $DB->get_manager();
 
-	
-    
-	return true;
+    if ($oldversion < 2019070901) {
+
+        // Define table product to be created.
+        $table = new xmldb_table('product');
+
+        // Adding fields to table product.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('price', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('quantity', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table product.
+        $table->add_key('product', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('user_id', XMLDB_KEY_FOREIGN, ['user_id'], 'user', ['id']);
+
+        // Conditionally launch create table for product.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table sale to be created.
+        $table = new xmldb_table('sale');
+
+        // Adding fields to table sale.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('product_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('details_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table sale.
+        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('product_id', XMLDB_KEY_FOREIGN, ['product_id'], 'product', ['id']);
+        $table->add_key('details_id', XMLDB_KEY_FOREIGN, ['details_id'], 'details', ['id']);
+
+        // Conditionally launch create table for sale.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table details to be created.
+        $table = new xmldb_table('details');
+
+        // Adding fields to table details.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('sale_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('quantity', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+
+        // Adding keys to table details.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('sale_id', XMLDB_KEY_FOREIGN, ['sale_id'], 'sale', ['id']);
+        $table->add_key('user_id', XMLDB_KEY_FOREIGN, ['user_id'], 'user', ['id']);
+
+        // Conditionally launch create table for details.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+
+        // Web_market savepoint reached.
+        upgrade_plugin_savepoint(true, 2019070901, 'local', 'web_market');
+    }
+
+    if ($oldversion < 2019071001) {
+
+        // Define table product to be created.
+        $table = new xmldb_table('product');
+
+        // Adding fields to table product.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('price', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('quantity', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('date', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table product.
+        $table->add_key('product', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('user_id', XMLDB_KEY_FOREIGN, ['user_id'], 'user', ['id']);
+
+        // Conditionally launch create table for product.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table sale to be created.
+        $table = new xmldb_table('sale');
+
+        // Adding fields to table sale.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sale_status', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table sale.
+        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for sale.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table details to be created.
+        $table = new xmldb_table('details');
+
+        // Adding fields to table details.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('sale_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('product_id', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('quantity', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('datesold', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table details.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('sale_id', XMLDB_KEY_FOREIGN, ['sale_id'], 'sale', ['id']);
+        $table->add_key('product_id', XMLDB_KEY_FOREIGN, ['product_id'], 'product', ['id']);
+
+        // Conditionally launch create table for details.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Web_market savepoint reached.
+        upgrade_plugin_savepoint(true, 2019071001, 'local', 'web_market');
+    }
+
+
+
+    return true;
 }
