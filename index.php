@@ -83,7 +83,7 @@
                     $product->name,
                     $product->price,
                     date('d-m-Y',strtotime($product->date)),
-                    $product->user_id,
+                    $product->username,
                     $ver_action
                 );
             }

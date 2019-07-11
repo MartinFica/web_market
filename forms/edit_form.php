@@ -77,20 +77,24 @@ class edit_form extends moodleform {
         $quantity = $data ["quantity"];
 
 
-        if( strlen($name)== 0){
-            $errors[$name] = "Campo requerido.";
+        if (isset($name) && !empty($name) && $name != "" && $name != null ){
+        }else{
+            $errors["name"] = "Campo requerido";
         }
 
-        if( strlen($description)== 0){
-            $errors[$description] = "Campo requerido.";
+        if (isset($description) && !empty($description) && $description != "" && $description != null ){
+        }else{
+            $errors["description"] = "Campo requerido";
         }
 
-        if( strlen($price)== 0){
-            $errors[$price] = "Campo requerido.";
+        if (isset($price) && !empty($price) && $price != "" && $price != null ){
+        }else{
+            $errors["price"] = "Campo requerido";
         }
 
-        if( strlen($quantity)== 0){
-            $errors[$quantity] = "Campo requerido.";
+        if (isset($quantity) && !empty($quantity) && $quantity != "" && $quantity != null ){
+        }else{
+            $errors["quantity"] = "Campo requerido";
         }
 
         return $errors;

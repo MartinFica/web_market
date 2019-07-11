@@ -60,8 +60,10 @@
     // READY
     function getAllProducts(){
         global $DB;
-        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id
+        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username
                     FROM {product} p
+                    INNER JOIN {user} u
+                    ON u.id = p.user_id
                     ORDER BY p.date DESC';
 
         $sales = $DB->get_records_sql($sql, null);
@@ -88,7 +90,6 @@
                 'Nombre',
                 'Precio',
                 'Fecha Publicación',
-                'Vendedor'
             ];
 
             foreach($products as $product){
@@ -121,26 +122,11 @@
                     $editar_ic
                 );
 
-                /**
-                 *Botón ver
-                 * */
-                $ver_url = new moodle_url('/local/web_market/view.php', [
-                    'action' => 'view',
-                    'product_id' =>  $product->id,
-                    'url' => 2
-
-                ]);
-                $ver_ic = new pix_icon('t/hide', 'Ver');
-                $ver_action = $OUTPUT->action_icon(
-                    $ver_url,
-                    $ver_ic
-                );
-
                 $products_table->data[] = array(
                     $product->name,
                     $product->price,
                     date('d-m-Y',strtotime($product->date)),
-                    $ver_action.' '.$editar_action.' '.$delete_action
+                    $editar_action.' '.$delete_action
                 );
             }
         }
