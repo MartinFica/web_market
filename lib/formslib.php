@@ -1,6 +1,6 @@
 <?php
 
-    // READY
+    // Revisar
     function insertRecord($name, $description, $price, $quantity){
         global $DB, $USER;
         $record = new stdClass();
@@ -14,16 +14,16 @@
         $DB->insert_record('product', $record);
     }
 
-    // Cambiar
-    function updateRecord($id_aviso, $titulo, $descripcion, $id_tipo_aviso){
+    // Revisar
+    function updateRecord($name, $description, $price, $quantity){
         global $DB;
 
         $record = new stdClass();
-        $record->id = $id_aviso;
-        $record->titulo = $titulo;
-        $record->descripcion = $descripcion;;
-        $record->id_tipo_aviso = $id_tipo_aviso;
-        $DB->update_record('aviso', $record);
+        $record->name = $name;
+        $record->description = $description;
+        $record->price = $price;
+        $record->quantity = $quantity;
+        $DB->update_record('product', $record);
     }
 
     // READY
@@ -39,23 +39,21 @@
         return true;
     }
 
-    // Cambiar
+    // Revisar
     function getAvisosUsuario($id_usuario){
         global $DB;
-        $sql = 'SELECT a.id, a.titulo, ta.nombre as Categoria
-                FROM {aviso} a
-                INNER JOIN {tipo_aviso} ta
-                ON ta.id = a.id_tipo_aviso
+        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id
+                FROM {product} p
                 INNER JOIN {user} u
-                ON u.id = a.id_user
+                ON u.id = p.user_id
                 AND u.id ='. $id_usuario.
-                ' ORDER BY a.fecha_creacion DESC';
+                ' ORDER BY p.date DESC';
 
         var_dump($sql);
         exit;
 
-        $avisos = $DB->get_records_sql($sql, null);
-        return $avisos;
+        $products = $DB->get_records_sql($sql, null);
+        return $products;
     }
 
     // READY
@@ -70,12 +68,12 @@
         return $sales;
     }
 
-    // Cambiar
-    function findAviso($id_aviso){
+    // Revisar
+    function findProduct($product_id){
         global $DB;
-        $aviso = $DB->get_record('aviso', ['id' => $id_aviso]); //select*
+        $product = $DB->get_record('product', ['id' => $product_id]); //select*
 
-        return $aviso;
+        return $product;
     }
 
     // READY
@@ -174,31 +172,30 @@
 
 }
 
-    // Cambiar
-    function retornarVistaAviso($id_aviso, $url){
-
+    // Revisar
+    function retornarVistaProduct($product_id, $url){
 
         if($url == 1){
-            $url= '/local/diario_mural/index.php';
+            $url= '/local/web_market/index.php';
         }
         else if($url == 2){
-            $url= '/local/diario_mural/usuario_avisos.php';
+            $url= '/local/web_market/misventas.php';
         }
 
-        $aviso = findAviso($id_aviso);
+        $product = findProduct($product_id);
         echo
             '<table style="width:50%">
               <tr>
-                <td><strong>Título</strong></td>
-                <td>'.$aviso->titulo.'</td>
+                <td><strong>Name</strong></td>
+                <td>'.$product->name.'</td>
               </tr>
               <tr>
-                <td><strong>Descripción</strong></td>
-                <td>'.$aviso->descripcion.'</td>
+                <td><strong>Description</strong></td>
+                <td>'.$product->description.'</td>
             </tr>
               <tr>
-                <td rowspan="2"><strong>Fecha Publicación</strong></td>
-                <td>'.$aviso->fecha_creacion.'</td>
+                <td rowspan="2"><strong>Date put on sale</strong></td>
+                <td>'.$produt->date.'</td>
               </tr>
             </table> 
             <br>

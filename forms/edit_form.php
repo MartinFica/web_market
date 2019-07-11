@@ -28,80 +28,66 @@ require(__DIR__.'/../../../config.php');
 require_once ($CFG->libdir . '/formslib.php');
 
 class edit_form extends moodleform {
+
     //Add elements to form
     public function definition() {
         global $CFG, $DB;
 
         $edit_form = $this->_form;
         $instance = $this->_customdata;
-        $id_aviso = $instance['id_aviso'];
-        $tipos_aviso = $this->getTiposAviso();
-        $dropDownAviso = [];
-        foreach ($tipos_aviso as $tipo_aviso){
-            $dropDownAviso[$tipo_aviso->id] = $tipo_aviso->nombre;
-        }
+        $product_id = $instance['product_id'];
 
-        $aviso = $DB->get_record('aviso', ['id'=>$id_aviso]);
+        $product = $DB->get_record('product', ['id'=>$product_id]);
 
-        //Tipo Aviso Drop Down
-        $edit_form->addElement("select", "id_tipo_aviso", get_string('titulo', 'local_diario_mural'), $dropDownAviso);
         // Title input
-        $edit_form->addElement ("text", "titulo", get_string('titulo', 'local_diario_mural'));
-        $edit_form->setType ("titulo", PARAM_TEXT);
+        $edit_form->addElement ("text", "name", get_string('name', 'local_web_market'));
+        $edit_form->setType ("name", PARAM_TEXT);
 
         //Description input
-        $edit_form->addElement ('textarea','descripcion', get_string('titulo', 'local_diario_mural'), 'wrap="virtual" rows="5" cols="50"');
-        $edit_form->setType ('descripcion', PARAM_RAW);
+        $edit_form->addElement ('textarea','description', get_string('description', 'local_web_market'), 'wrap="virtual" rows="5" cols="50"');
+        $edit_form->setType ('description', PARAM_RAW);
 
 
         // Set action to "add"
         $edit_form->addElement ("hidden", "action", "edit");
         $edit_form->setType ("action", PARAM_TEXT);
-        $edit_form->addElement('hidden', 'id_aviso', $id_aviso);
-        $edit_form->setType('id_aviso', PARAM_INT);
+        $edit_form->addElement('hidden', 'product_id', $product_id);
+        $edit_form->setType('product_id', PARAM_INT);
 
         $this->add_action_buttons(true);
 
     }
+
     //Custom validation should be added here
     function validation($data, $files) {
 
         global $DB;
         $errors = array();
 
-        $id_tipo_aviso = $data["id_tipo_aviso"];
-        $titulo = $data["titulo"];
-        $descripcion = $data["descripcion"];
+        $name = $data["name"];
+        $description = $data["description"];
+        $price = $data["price"];
+        $quantity = $data ["quantity"];
 
-        if(!isset($id_tipo_aviso) && empty($id_tipo_aviso)){
 
-            $errors[$id_tipo_aviso] = "Campo requerido.";
+        if( strlen($name)== 0){
+            $errors[$name] = "Campo requerido.";
         }
 
-        //!isset($titulo) || empty($titulo) ||
-        if( strlen($titulo)== 0){
-            $errors[$titulo] = "Campo requerido.";
+        if( strlen($description)== 0){
+            $errors[$description] = "Campo requerido.";
         }
 
-        if( strlen($descripcion)== 0){
-            $errors[$descripcion] = "Campo requerido.";
+        if( strlen($price)== 0){
+            $errors[$price] = "Campo requerido.";
+        }
+
+        if( strlen($quantity)== 0){
+            $errors[$quantity] = "Campo requerido.";
         }
 
         return $errors;
     }
-
-    function getTiposAviso(){
-        global $DB;
-
-        // Query para onbtener los registro de la tabla Tipo de Aviso
-        $sql = 'SELECT id, nombre
-				FROM {tipo_aviso}';
-
-        // Retornando registros de la tabla Tipo Aviso
-        return  $DB->get_records_sql($sql,null);
-    }
-
-
 
 }
 
