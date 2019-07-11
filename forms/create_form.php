@@ -45,11 +45,11 @@ class create_form extends moodleform {
 
         // Price input
         $mform->addElement ("text", "price", get_string('price', 'local_web_market'));
-        $mform->setType ("price", PARAM_TEXT);
+        $mform->setType ("price", PARAM_INT);
 
         // Quantity input
         $mform->addElement ("text", "quantity", get_string('quantity', 'local_web_market'));
-        $mform->setType ("quantity", PARAM_TEXT);
+        $mform->setType ("quantity", PARAM_INT);
 
         // Set action to "add"
         $mform->addElement ("hidden", "action", "add");

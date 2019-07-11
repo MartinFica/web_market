@@ -80,10 +80,10 @@
                 );
 
                 $products_table->data[] = array(
-                    $product->nombre,
-                    $product->precio,
-                    date('d-m-Y',strtotime($product->fecha)),
-                    $product->vendedor,
+                    $product->name,
+                    $product->price,
+                    date('d-m-Y',strtotime($product->date)),
+                    $product->user_id,
                     $ver_action
                 );
             }

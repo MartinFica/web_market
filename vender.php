@@ -23,7 +23,6 @@
 
     require_once('forms/create_form.php');
     require_once ('lib/formslib.php');
-    //require(__DIR__.'/../../config.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
 
@@ -68,7 +67,5 @@
     if($action == 'view'){
         getAllmisventas($OUTPUT);
     }
-
-
 
 echo $OUTPUT->footer();

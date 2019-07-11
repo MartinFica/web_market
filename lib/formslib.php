@@ -1,6 +1,6 @@
 <?php
 
-    // Ready? No guarda bn los datos
+    // READY
     function insertRecord($name, $description, $price, $quantity){
         global $DB, $USER;
         $record = new stdClass();
@@ -14,11 +14,12 @@
         $DB->insert_record('product', $record);
     }
 
-    // Revisar
-    function updateRecord($name, $description, $price, $quantity){
+    // READY
+    function updateRecord($product_id, $name, $description, $price, $quantity){
         global $DB;
 
         $record = new stdClass();
+        $record->id = $product_id;
         $record->name = $name;
         $record->description = $description;
         $record->price = $price;
@@ -68,7 +69,7 @@
         return $sales;
     }
 
-    // Revisar
+    // READY
     function findProduct($product_id){
         global $DB;
         $product = $DB->get_record('product', ['id' => $product_id]); //select*
@@ -136,9 +137,9 @@
                 );
 
                 $products_table->data[] = array(
-                    $product->nombre,
-                    $product->precio,
-                    date('d-m-Y',strtotime($product->fecha)),
+                    $product->name,
+                    $product->price,
+                    date('d-m-Y',strtotime($product->date)),
                     $ver_action.' '.$editar_action.' '.$delete_action
                 );
             }

@@ -39,14 +39,21 @@ class edit_form extends moodleform {
 
         $product = $DB->get_record('product', ['id'=>$product_id]);
 
-        // Title input
+        // Name edit
         $edit_form->addElement ("text", "name", get_string('name', 'local_web_market'));
         $edit_form->setType ("name", PARAM_TEXT);
 
-        //Description input
+        // Description edit
         $edit_form->addElement ('textarea','description', get_string('description', 'local_web_market'), 'wrap="virtual" rows="5" cols="50"');
         $edit_form->setType ('description', PARAM_RAW);
 
+        // Price edit
+        $edit_form->addElement ("text", "price", get_string('price', 'local_web_market'));
+        $edit_form->setType ("price", PARAM_INT);
+
+        // Quantity edit
+        $edit_form->addElement ("text", "quantity", get_string('quantity', 'local_web_market'));
+        $edit_form->setType ("quantity", PARAM_INT);
 
         // Set action to "add"
         $edit_form->addElement ("hidden", "action", "edit");
