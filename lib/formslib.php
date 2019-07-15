@@ -1,6 +1,6 @@
 <?php
 
-    // READY
+    // function to add a product to database
     function insertRecord($name, $description, $price, $quantity){
         global $DB, $USER;
         $record = new stdClass();
@@ -14,7 +14,7 @@
         $DB->insert_record('product', $record);
     }
 
-    // READY
+    // function to change a product in the data base
     function updateRecord($product_id, $name, $description, $price, $quantity){
         global $DB;
 
@@ -27,7 +27,7 @@
         $DB->update_record('product', $record);
     }
 
-    // READY
+    // function to delete a product from database
     function deleteRegister($product_id){
         global $DB, $action;
         //Borrar venta
@@ -40,24 +40,20 @@
         return true;
     }
 
-    // Revisar
-    function getAvisosUsuario($id_usuario){
-        global $DB;
-        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id
-                FROM {product} p
-                INNER JOIN {user} u
-                ON u.id = p.user_id
-                AND u.id ='. $id_usuario.
-                ' ORDER BY p.date DESC';
+    // funcition to add product to a cart (creates new entry in details table)
+    // NOT READY
+    function addToCart($product_id){
+        global $DB, $USER;
+        $record = new stdClass();
+        $record -> sale_id = $sale_id;
+        $record -> product_id = $product_id;
+        $record -> date = date('Y-m-d H:i');
+        $record -> user_id = $USER->id;
 
-        var_dump($sql);
-        exit;
-
-        $products = $DB->get_records_sql($sql, null);
-        return $products;
+        $DB ->insert_record('details',$record);
     }
 
-    // READY
+    // get's all the products that exist in the table products
     function getAllProducts(){
         global $DB;
         $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username
@@ -71,19 +67,25 @@
         return $sales;
     }
 
-    // NOT ready
+    // finds a specific product base on the product_id
     function findProduct($product_id){
         global $DB;
 
-        $product_user = $DB->get_record('product', ['id' => $product_id]);
-        $email = $DB->get_record('user',['id' => $product_user->user_id],$email = 'email');
+        /*$sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username, u.email
+                    FROM {product} p
+                    INNER JOIN {user} u 
+                    ON (u.id = p.user_id)
+                    WHERE p.id = ?
+                    ';
 
-        $product = 
+        $product = $DB->get_records_sql($sql,array($product_id));]*/
+
+        $product = $DB->get_record('product',['id' => $product_id]);
 
         return $product;
     }
 
-    // READY
+    // gets all the things a user is saling
     function getAllmisventas($OUTPUT){
         $products = getAllProducts();
         $products_table = new html_table();
@@ -163,9 +165,9 @@
 
 }
 
-    // Revisar
+    // lets the user see more details for a specific product
     function comprarProducto($product_id, $url){
-
+        global $DB;
         if($url == 1){
             $url= '/local/web_market/index.php';
         }
@@ -174,7 +176,9 @@
         }
 
         $product = findProduct($product_id);
-        $email = $DB->get_record('user', ['email' => $product->user_id]);
+
+        $udata = $DB->get_record('user',['id' => $product->user_id]);
+
         echo
             '<table style="width:50%">
               <tr>
@@ -187,22 +191,23 @@
             </tr>
               <tr>
                 <td><strong>Date put on sale</strong></td>
-                <td>'.$produt->date.'</td>
+                <td>'.$product->date.'</td>
               </tr>
               <tr>
-                <td><strong>Price</strong></td>
+                <td><strong>Price ($)</strong></td>
                 <td>'.$product->price.'</td>
               </tr>
              <tr>
                 <td><strong>Owner</strong></td>
-                <td>'.$product->username.'</td>
+                <td>'.$udata->username.'</td>
               </tr>
              <tr>
                 <td rowspan="2"><strong>Email</strong></td>
-                <td>'.$product->email.'</td>
+                <td>'.$udata->email.'</td>
               </tr>
             </table> 
             <br>
     
-            <a href='.new moodle_url($url).' class="btn btn-primary">ATRÁS</a>';
+            <a href='.new moodle_url($url).' class="btn btn-primary">ATRÁS</a>
+            <a href='.new moodle_url('/local/web_market/cart.php').' class="btn btn-primary">AGREGAR AL CARRO</a>';
     }

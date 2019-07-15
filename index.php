@@ -69,11 +69,11 @@
                 * */
                 $ver_url = new moodle_url('/local/web_market/view.php', [
                     'action' => 'view',
-                    'id_product' =>  $product->id,
+                    'product_id' =>  $product->id,
                     'url' =>  1,
                 ]);
 
-                $ver_ic = new pix_icon('t/hide', 'Ver');
+                $ver_ic = new pix_icon('t/hide', 'View');
                 $ver_action = $OUTPUT->action_icon(
                     $ver_url,
                     $ver_ic
