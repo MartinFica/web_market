@@ -40,17 +40,16 @@
         return true;
     }
 
-    // funcition to add product to a cart (creates new entry in details table)
+    // function to add product to a cart (creates new entry in details table)
     // NOT READY
     function addToCart($product_id){
         global $DB, $USER;
-        $record = new stdClass();
-        $record -> sale_id = $sale_id;
-        $record -> product_id = $product_id;
-        $record -> date = date('Y-m-d H:i');
-        $record -> user_id = $USER->id;
 
-        $DB ->insert_record('details',$record);
+        $recordsale = new stdClass();
+        $recordsale -> user_id = $USER->id;
+        $recordsale -> sale_status = 'reservado';
+
+        $DB ->insert_record('details',$recordsale);
     }
 
     // get's all the products that exist in the table products
@@ -209,5 +208,5 @@
             <br>
     
             <a href='.new moodle_url($url).' class="btn btn-primary">ATRÁS</a>
-            <a href='.new moodle_url('/local/web_market/cart.php').' class="btn btn-primary">AGREGAR AL CARRO</a>';
+            <a href='.new moodle_url('/local/web_market/comprar.php').' class="btn btn-primary">AGREGAR AL CARRO</a>';
     }
