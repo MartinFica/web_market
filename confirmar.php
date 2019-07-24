@@ -49,10 +49,16 @@
 
     echo $OUTPUT->header();
 
+    $sale = getSale();
+    foreach ($sale as $data){
+        $id = $data->id;
+    }
+
     $url1 = '/local/web_market/index.php';
     $url2 = new moodle_url('/local/web_market/comprar.php', [
         'action' => 'view',
         'product_id' =>  $product_id,
+        'sale_id' => $sale_id = $id
     ]);
 
     echo
@@ -64,7 +70,5 @@
             <br>
             <a href='.new moodle_url($url1).' class="btn btn-primary">ATRÁS</a>
             <a href='.new moodle_url($url2).' class="btn btn-primary">AGREGAR AL CARRO</a>';
-
-
 
     echo $OUTPUT->footer();

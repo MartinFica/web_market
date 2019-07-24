@@ -251,6 +251,17 @@
         return $details;
     }
 
+    // add items to cart
+    function addtoCart($product_id,$sale_id){
+        global $DB;
+
+        $record = new stdClass();
+        $record->sale_id = $sale_id;
+        $record->product_id = $product_id;
+        $record->quantity = 1;
+        $DB->update_record('details', $record);
+    }
+
     // display all the items a user is currently buying
     function getAllmiscompras($OUTPUT){
         global $DB;

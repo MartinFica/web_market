@@ -35,9 +35,10 @@
     $PAGE->set_context($context);
     $PAGE->set_pagelayout("standard");
 
-    // Possible actions -> view, add. Standard is view mode
-    $action = optional_param("action", "view", PARAM_TEXT);
+    // Possible actions -> view, delete. Standard is view mode
+    $action = optional_param("action", "view", "delete", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
+    $sale_id = optional_param("sale_id", null, PARAM_INT);
 
     require_login();
     if (isguestuser()){
@@ -49,9 +50,11 @@
 
     echo $OUTPUT->header();
 
+    // Add product to detail
+    addtoCart($product_id,$sale_id);
 
     if($action == 'edit'){
-        getAllmiscompras($OUTPUT);
+        getAllmiscompras($sale_id);
     }
 
     // Delete the selected record
@@ -64,7 +67,57 @@
     }
 
     if($action == 'view'){
-        getAllmiscompras($OUTPUT);
+
+        $details = getAllProducts();
+        $products_table = new html_table();
+
+        if(sizeof($products) > 0){
+
+            $products_table->head = [
+                'Nombre',
+                'Precio',
+                'Fecha Publicación',
+                'Vendedor'
+            ];
+
+            foreach($products as $product){
+                /**
+                 *Botón ver
+                 * */
+                $ver_url = new moodle_url('/local/web_market/view.php', [
+                    'action' => 'view',
+                    'product_id' =>  $product->id,
+                    'url' =>  1,
+                ]);
+
+                $ver_ic = new pix_icon('t/hide', 'View');
+                $ver_action = $OUTPUT->action_icon(
+                    $ver_url,
+                    $ver_ic
+                );
+
+                $products_table->data[] = array(
+                    $product->name,
+                    $product->price,
+                    date('d-m-Y',strtotime($product->date)),
+                    $product->username,
+                    $ver_action
+                );
+            }
+        }
+
+        $top_row = [];
+        $top_row[] = new tabobject(
+            'products',
+            new moodle_url('/local/web_market/index.php'),
+            ' En Venta'
+        );
+
+        $top_row[] = new tabobject(
+            'vender',
+            new moodle_url('/local/web_market/misventas.php'),
+            'Mis Ventas'
+        );
     }
 
-    echo $OUTPUT->footer();
+        echo $OUTPUT->footer();
