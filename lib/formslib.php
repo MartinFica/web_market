@@ -40,18 +40,6 @@
         return true;
     }
 
-    // function to add product to a cart (creates new entry in details table)
-    // NOT READY
-    function addToCart($product_id){
-        global $DB, $USER;
-
-        $recordsale = new stdClass();
-        $recordsale -> user_id = $USER->id;
-        $recordsale -> sale_status = 'reservado';
-
-        $DB ->insert_record('details',$recordsale);
-    }
-
     // get's all the products that exist in the table products
     function getAllProducts(){
         global $DB;
@@ -84,7 +72,7 @@
         return $product;
     }
 
-    // gets all the things a user is saling
+    // gets all the things a user has on sale
     function getAllmisventas($OUTPUT){
         $products = getAllProducts();
         $products_table = new html_table();
@@ -178,6 +166,11 @@
 
         $udata = $DB->get_record('user',['id' => $product->user_id]);
 
+        $add_toChart = new moodle_url('/local/web_market/comprar.php', [
+            'action' => 'view',
+            'product_id' =>  $product_id,
+        ]);
+
         echo
             '<table style="width:50%">
               <tr>
@@ -208,5 +201,123 @@
             <br>
     
             <a href='.new moodle_url($url).' class="btn btn-primary">ATRÁS</a>
-            <a href='.new moodle_url('/local/web_market/comprar.php').' class="btn btn-primary">AGREGAR AL CARRO</a>';
+            <a href='.new moodle_url($add_toChart).' class="btn btn-primary">AGREGAR AL CARRO</a>';
+    }
+
+    // creates a New Sale entry when it doesnt exist one
+    function newSale(){
+        global $DB, $USER;
+        $record = new stdClass();
+        $record->user_id = $USER->id;
+        $record->sale_status = '1';
+        $DB->insert_record('sale',$record);
+
+        $sale = getSale();
+        return $sale;
+    }
+
+    // function that gets the current sale of a user (a user cannot have more than 1 active sale (code = 1) )
+    function getSale(){
+        global $DB,$USER;
+
+        $user_id = $USER->id;
+
+        $sql = 'SELECT s.id, s.user_id, s.sale_status
+                    FROM {sale} s
+                    WHERE s.sale_status = 1 and s.user_id = ?
+        ';
+        $sale = $DB->get_records_sql($sql, array($user_id));
+
+        if(sizeof($sale) == 0){
+            $sale = newSale();
+        }
+        return $sale;
+    }
+
+    function getDetails($sale_id){
+        global $DB;
+
+        $sql = 'SELECT d.quantity, p.name, p.price, u.username, u.email 
+                    FROM {details} d
+                    INNER JOIN {product} p
+                    ON d.product_id = p.id
+                    INNER JOIN {user} u
+                    ON p.user_id = u.id
+                    WHERE d.sale_id = ?
+        ';
+
+        $details = $DB->get_records_sql($sql, array($sale_id));
+        return $details;
+    }
+
+    // gets all the products that exists in the users cart
+    function getAllmiscompras($OUTPUT){
+        global $DB;
+
+        $sale = getSale();
+
+        //$details = $DB->get_record('details', ['sale_id' => $sale -> id]);
+        $sale_id = $sale->id;
+        $details= getDetails($sale_id);
+        $details_table = new html_table();
+
+        if(sizeof($details) > 0){
+
+            $details_table->head = [
+                'Nombre',
+                'Precio',
+                'Dueño',
+            ];
+
+            foreach($details as $detail){
+                /**
+                 *Botón eliminar
+                 * */
+                $delete_url = new moodle_url('/local/web_market/comprar.php', [
+                    'action' => 'delete',
+                    'product_id' =>  $detail->product_id,
+
+                ]);
+                $delete_ic = new pix_icon('t/delete', 'Eliminar');
+                $delete_action = $OUTPUT->action_icon(
+                    $delete_url,
+                    $delete_ic,
+                    new confirm_action('¿Ya no desea comprar este articulo?')
+                );
+
+
+                $details_table->data[] = array(
+                    $detail->name,
+                    $detail->price,
+                    $detail->quantity,
+                    $delete_action
+                );
+            }
+        }
+
+        $top_row = [];
+        $top_row[] = new tabobject(
+            'products',
+            new moodle_url('/local/web_market/index.php'),
+            ' En Venta'
+        );
+        $top_row[] = new tabobject(
+            'misventas',
+            new moodle_url('/local/web_market/misventas.php'),
+            'Mis Ventas'
+        );
+
+
+        // Displays all the records, tabs, and options
+        echo $OUTPUT->tabtree($top_row, 'misventas');
+
+        if (sizeof($details) == 0){
+            echo html_writer::nonempty_tag('h4', '¿Como llegaste a esta pagina?.', array('align' => 'left'));
+        }
+        else{
+            echo html_writer::table($details_table);
+        }
+
+
+
     }
