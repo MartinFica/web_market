@@ -69,7 +69,6 @@
 
         $details = getDetails($sale_id);
         $details_table = new html_table();
-        
 
         if(sizeof($details) > 0){
 

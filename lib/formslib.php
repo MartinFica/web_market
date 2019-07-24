@@ -251,7 +251,7 @@
     function getDetails($sale_id){
         global $DB;
 
-        $sql = 'SELECT d.quantity, p.name, p.price, u.username, u.email 
+        $sql = 'SELECT d.id, d.sale_id, d.product_id ,d.quantity, p.name, p.price, u.username, u.email 
                     FROM {details} d
                     INNER JOIN {product} p
                     ON d.product_id = p.id
