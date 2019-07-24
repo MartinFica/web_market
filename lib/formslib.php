@@ -166,7 +166,7 @@
 
         $udata = $DB->get_record('user',['id' => $product->user_id]);
 
-        $add_toChart = new moodle_url('/local/web_market/comprar.php', [
+        $add_toChart = new moodle_url('/local/web_market/confirmar.php', [
             'action' => 'view',
             'product_id' =>  $product_id,
         ]);
@@ -201,7 +201,7 @@
             <br>
     
             <a href='.new moodle_url($url).' class="btn btn-primary">ATRÁS</a>
-            <a href='.new moodle_url($add_toChart).' class="btn btn-primary">AGREGAR AL CARRO</a>';
+            <a href='.new moodle_url($add_toChart).' class="btn btn-primary">COMPRAR</a>';
     }
 
     // creates a New Sale entry when it doesnt exist one
@@ -234,6 +234,7 @@
         return $sale;
     }
 
+    // gets all the items the user has on his current cart
     function getDetails($sale_id){
         global $DB;
 
@@ -250,7 +251,7 @@
         return $details;
     }
 
-    // gets all the products that exists in the users cart
+    // display all the items a user is currently buying
     function getAllmiscompras($OUTPUT){
         global $DB;
 
