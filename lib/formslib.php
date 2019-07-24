@@ -295,3 +295,36 @@
         $details = $DB->get_records_sql($sql, array($sale_id));
         return $details;
     }
+
+    function updateProducts(){
+        global $DB;
+
+        $sale= getSale();
+        foreach ($sale as $data){
+            $id = $data->id;
+            $user_id = $data->user_id;
+        }
+
+        $record = new stdClass();
+        $record->id = $id;
+        $record->user_id = $user_id;
+        $record->sale_status = '0';
+        $DB->update_record('sale', $record);
+
+        $details = getDetails($id);
+
+        foreach($details as $detail){
+            $id = $detail->id;
+            $sale_id = $detail->sale_id;
+            $product_id = $detail->product_id;
+            $quantity = $detail->quantity;
+
+            $update = new stdClass();
+            $update -> id = $id;
+            $update -> sale_id = $sale_id;
+            $update -> product_id = $product_id;
+            $update -> quantity = $quantity;
+            $update -> datesold = date('Y-m-d H:i');
+            $DB->update_record('details', $update);
+        }
+    }

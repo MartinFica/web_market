@@ -129,10 +129,9 @@
             echo html_writer::nonempty_tag('h4', 'No tienes items en tu carro.', array('align' => 'left'));
         }else{
             echo html_writer::table($details_table);
+            $url= '/local/web_market/procesando.php';
+            echo '<a href='.new moodle_url($url).' class="btn btn-primary">FINALIZAR</a>';
         }
     }
-
-    $url= '/local/web_market/procesando.php';
-    echo '<a href='.new moodle_url($url).' class="btn btn-primary">FINALIZAR</a>';
 
     echo $OUTPUT->footer();
