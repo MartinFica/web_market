@@ -37,6 +37,7 @@
 
     // Possible actions -> view, delete. Standard is view mode
     $action = optional_param("action", "view", PARAM_TEXT);
+    $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
     $sale_id = optional_param("sale_id", null, PARAM_INT);
 
@@ -50,10 +51,6 @@
 
     echo $OUTPUT->header();
 
-    /*if($action == 'edit'){
-        getAllmiscompras($sale_id);
-    }*/
-
     // Delete the selected record
     if ($action == "delete"){
 
@@ -65,11 +62,14 @@
 
     if($action == 'view'){
 
-        // Add product to detail
-        addtoCart($product_id,$sale_id);
+        if ($previous = 'confirmed'){
+            // Add product to detail
+            addtoCart($product_id,$sale_id);
+        }
 
         $details = getDetails($sale_id);
         $details_table = new html_table();
+        
 
         if(sizeof($details) > 0){
 
@@ -127,10 +127,13 @@
     if ($action == 'view'){
         echo $OUTPUT->tabtree($top_row, 'carro');
         if (sizeof(getAllmiscompras($sale_id)) == 0){
-            echo html_writer::nonempty_tag('h4', 'En este momento no hay articulos a la venta.', array('align' => 'left'));
+            echo html_writer::nonempty_tag('h4', 'No tienes items en tu carro.', array('align' => 'left'));
         }else{
             echo html_writer::table($details_table);
         }
     }
 
-        echo $OUTPUT->footer();
+    $url= '/local/web_market/procesando.php';
+    echo '<a href='.new moodle_url($url).' class="btn btn-primary">FINALIZAR</a>';
+
+    echo $OUTPUT->footer();

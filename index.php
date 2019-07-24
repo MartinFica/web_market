@@ -37,6 +37,7 @@
 
     // Possible actions -> view, add. Standard is view mode
     $action = optional_param("action", "view", PARAM_TEXT);
+    $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
 
     require_login();
@@ -101,9 +102,17 @@
             new moodle_url('/local/web_market/misventas.php'),
             'Mis Ventas'
         );
+
+        $sale = getSale();
+        foreach ($sale as $data){
+            $id = $data->id;
+        }
         $top_row[] = new tabobject(
             'carro',
-            new moodle_url('/local/web_market/comprar.php'),
+            new moodle_url('/local/web_market/comprar.php', [
+                'previous' => 'other',
+                'sale_id' => $id
+            ]),
             'Mi Carro'
         );
     }

@@ -37,6 +37,7 @@
 
     // Possible actions -> view, add. Standard is view mode
     $action = optional_param("action", "view", PARAM_TEXT);
+    $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
 
     require_login();
@@ -57,6 +58,7 @@
     $url1 = '/local/web_market/index.php';
     $url2 = new moodle_url('/local/web_market/comprar.php', [
         'action' => 'view',
+        'previous' => 'confirmed',
         'product_id' =>  $product_id,
         'sale_id' => $sale_id = $id
     ]);
