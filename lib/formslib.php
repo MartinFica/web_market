@@ -267,12 +267,9 @@
     // add items to cart
     function addtoCart($product_id,$sale_id){
         global $DB;
-        $details = getAllmiscompras($sale_id);
-        foreach ($details as $detail){
-            $id_product = $detail->product_id;
-        }
+        $details = getDetails($sale_id);
 
-        if ($id_product != $product_id) {
+        if (!in_array($product_id,$details) and !is_null($product_id)) {
             $record = new stdClass();
             $record->sale_id = $sale_id;
             $record->product_id = $product_id;
@@ -295,6 +292,7 @@
         $details = $DB->get_records_sql($sql, array($sale_id));
         return $details;
     }
+
 
     function updateProducts(){
         global $DB;
@@ -328,3 +326,10 @@
             $DB->update_record('details', $update);
         }
     }
+
+    // function to delete a product from database
+    function deletefromCart($id){
+        global $DB;
+        //Borrar item del carro
+        $DB->delete_records("details", array("id" => $id));
+        }

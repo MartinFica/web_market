@@ -52,23 +52,23 @@
     echo $OUTPUT->header();
 
     // Delete the selected record
-    if ($action == "delete"){
-
-        if(!deleteRegister($product_id)){
+    /*if ($action == "delete"){
+        if(!deletefromCart($id)){
             print_error("Articulo no existe.");
         }
         $action = 'view';
-    }
+    }*/
 
     if($action == 'view'){
+
+        $details = getDetails($sale_id);
+        $details_table = new html_table();
+
 
         if ($previous = 'confirmed'){
             // Add product to detail
             addtoCart($product_id,$sale_id);
         }
-
-        $details = getDetails($sale_id);
-        $details_table = new html_table();
 
         if(sizeof($details) > 0){
 
@@ -80,11 +80,13 @@
             ];
 
             foreach($details as $detail){
+                $id = $detail->id;
+                $elim = 'no';
                 /**
                  *Botón eliminar
                  * */
                 $delete_url = new moodle_url('/local/web_market/comprar.php', [
-                    'action' => 'delete',
+                    $elim => 'si',
                 ]);
                 $delete_ic = new pix_icon('t/delete', 'Eliminar');
                 $delete_action = $OUTPUT->action_icon(
@@ -92,6 +94,12 @@
                     $delete_ic,
                     new confirm_action('¿No lo desea comprar?')
                 );
+
+                if ($elim == 'si'){
+                    deletefromCart($id);
+                    echo 'eliminado';
+                    $elim = 'no';
+                }
 
                 $details_table->data[] = array(
                     $detail->name,
