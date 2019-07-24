@@ -101,6 +101,11 @@
             new moodle_url('/local/web_market/misventas.php'),
             'Mis Ventas'
         );
+        $top_row[] = new tabobject(
+            'carro',
+            new moodle_url('/local/web_market/comprar.php'),
+            'Mi Carro'
+        );
     }
 
     // Displays all the records, tabs, and options

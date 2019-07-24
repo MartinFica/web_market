@@ -36,7 +36,7 @@
     $PAGE->set_pagelayout("standard");
 
     // Possible actions -> view, delete. Standard is view mode
-    $action = optional_param("action", "view", "delete", PARAM_TEXT);
+    $action = optional_param("action", "view", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
     $sale_id = optional_param("sale_id", null, PARAM_INT);
 
@@ -50,12 +50,9 @@
 
     echo $OUTPUT->header();
 
-    // Add product to detail
-    addtoCart($product_id,$sale_id);
-
-    if($action == 'edit'){
+    /*if($action == 'edit'){
         getAllmiscompras($sale_id);
-    }
+    }*/
 
     // Delete the selected record
     if ($action == "delete"){
@@ -68,40 +65,41 @@
 
     if($action == 'view'){
 
-        $details = getAllProducts();
-        $products_table = new html_table();
+        // Add product to detail
+        addtoCart($product_id,$sale_id);
 
-        if(sizeof($products) > 0){
+        $details = getDetails($sale_id);
+        $details_table = new html_table();
 
-            $products_table->head = [
-                'Nombre',
-                'Precio',
-                'Fecha Publicación',
-                'Vendedor'
+        if(sizeof($details) > 0){
+
+            $details_table->head = [
+                'Name',
+                'Price',
+                'Owner',
+                'Email'
             ];
 
-            foreach($products as $product){
+            foreach($details as $detail){
                 /**
-                 *Botón ver
+                 *Botón eliminar
                  * */
-                $ver_url = new moodle_url('/local/web_market/view.php', [
-                    'action' => 'view',
-                    'product_id' =>  $product->id,
-                    'url' =>  1,
+                $delete_url = new moodle_url('/local/web_market/comprar.php', [
+                    'action' => 'delete',
                 ]);
-
-                $ver_ic = new pix_icon('t/hide', 'View');
-                $ver_action = $OUTPUT->action_icon(
-                    $ver_url,
-                    $ver_ic
+                $delete_ic = new pix_icon('t/delete', 'Eliminar');
+                $delete_action = $OUTPUT->action_icon(
+                    $delete_url,
+                    $delete_ic,
+                    new confirm_action('¿No lo desea comprar?')
                 );
 
-                $products_table->data[] = array(
-                    $product->name,
-                    $product->price,
-                    date('d-m-Y',strtotime($product->date)),
-                    $product->username,
-                    $ver_action
+                $details_table->data[] = array(
+                    $detail->name,
+                    $detail->price,
+                    $detail->username,
+                    $detail->email,
+                    $delete_action
                 );
             }
         }
@@ -118,6 +116,21 @@
             new moodle_url('/local/web_market/misventas.php'),
             'Mis Ventas'
         );
+
+        $top_row[] = new tabobject(
+            'carro',
+            new moodle_url('/local/web_market/comprar.php'),
+            'Mi Carro'
+        );
+    }
+
+    if ($action == 'view'){
+        echo $OUTPUT->tabtree($top_row, 'carro');
+        if (sizeof(getAllmiscompras($sale_id)) == 0){
+            echo html_writer::nonempty_tag('h4', 'En este momento no hay articulos a la venta.', array('align' => 'left'));
+        }else{
+            echo html_writer::table($details_table);
+        }
     }
 
         echo $OUTPUT->footer();
