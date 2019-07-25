@@ -27,11 +27,11 @@ require(__DIR__.'/../../../config.php');
 //Necesario para desplegar el formulario
 require_once ($CFG->libdir . '/formslib.php');
 
-class create_form extends moodleform {
+class addproduct extends moodleform {
 
     //Add elements to form
     public function definition() {
-        global $CFG;
+        //global $CFG;
 
         $mform = $this->_form;
 
@@ -61,7 +61,7 @@ class create_form extends moodleform {
     //Custom validation should be added here
     function validation($data, $files) {
 
-        global $DB;
+        //global $DB;
         $errors = array();
 
         $name = $data["name"];

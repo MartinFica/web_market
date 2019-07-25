@@ -26,7 +26,7 @@
 
     global $DB, $PAGE, $OUTPUT, $USER;
 
-    $url_view= '/local/web_market/view.php';
+    $url_view= '/local/web_market/comprar.php';
 
     $context = context_system::instance();
     $url = new moodle_url($url_view);

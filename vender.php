@@ -21,12 +21,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-    require_once('forms/create_form.php');
-    require_once ('lib/formslib.php');
+    require_once('forms/createform.php');
+    //require_once ('lib/formslib.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
 
-    $addForm = new create_form();
+    $addForm = new addproduct();
     $context = context_system::instance();
     $url = new moodle_url('/local/web_market/vender.php');
     $PAGE->set_url($url);
@@ -36,6 +36,9 @@
     // Possible actions -> view, add. Standard is view mode
     $action = optional_param("action", "view", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
+    $previous = optional_param("confirmed", "other", PARAM_TEXT);
+    $sale_id = optional_param("sale_id", null, PARAM_INT);
+
 
     require_login();
     if (isguestuser()){
@@ -56,7 +59,16 @@
         }
         else if ($data = $addForm->get_data()) {
 
-            insertRecord($data->name, $data->description, $data->price, $data->quantity , $USER->id, $DB);
+            $record = new stdClass();
+            $record->name = $data->name;
+            $record->description = $data->description;
+            $record->price = $data->price;
+            $record->quantity = $data->quantity;
+            $record->date = date('Y-m-d H:i');
+            $record->user_id = $USER->id;
+            // Insert register
+            $DB->insert_record('product', $record);
+
             $action = 'view';
         }
         else{
@@ -65,7 +77,106 @@
     }
 
     if($action == 'view'){
-        getAllmisventas($OUTPUT);
+        // Getting user products
+        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username
+                FROM {product} p
+                INNER JOIN {user} u
+                ON u.id = p.user_id
+                ORDER BY p.date DESC';
+        $products = $DB->get_records_sql($sql, null);
+        $products_table = new html_table();
+
+        if(sizeof($products) > 0){
+
+            $products_table->head = [
+                'Nombre',
+                'Precio',
+                'Fecha Publicación',
+            ];
+
+            foreach($products as $product){
+                /**
+                 *Botón eliminar
+                 * */
+                $delete_url = new moodle_url('/local/web_market/misventas.php', [
+                    'action' => 'delete',
+                    'product_id' =>  $product->id,
+                ]);
+                $delete_ic = new pix_icon('t/delete', 'Eliminar');
+                $delete_action = $OUTPUT->action_icon(
+                    $delete_url,
+                    $delete_ic,
+                    new confirm_action('¿Ya no vende este articulo?')
+                );
+
+                /**
+                 *Botón editar
+                 * */
+                $editar_url = new moodle_url('/local/web_market/cambiarventa.php', [
+                    'action' => 'edit',
+                    'product_id' =>  $product->id
+
+                ]);
+                $editar_ic = new pix_icon('i/edit', 'Editar');
+                $editar_action = $OUTPUT->action_icon(
+                    $editar_url,
+                    $editar_ic
+                );
+
+                $products_table->data[] = array(
+                    $product->name,
+                    $product->price,
+                    date('d-m-Y',strtotime($product->date)),
+                    $editar_action.' '.$delete_action
+                );
+            }
+        }
+
+        $url_button = new moodle_url("/local/web_market/vender.php", [
+            "action" => "add",
+            'previous' => 'other',
+            'sale_id' => $sale_id
+        ]);
+
+        $top_row = [];
+        $top_row[] = new tabobject(
+            'products',
+            new moodle_url('/local/web_market/index.php', [
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]),
+            'En Venta'
+        );
+        $top_row[] = new tabobject(
+            'misventas',
+            new moodle_url('/local/web_market/misventas.php', [
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]),
+            'Mis Ventas'
+        );
+
+        $top_row[] = new tabobject(
+            'carro',
+            new moodle_url('/local/web_market/comprar.php', [
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]),
+            'Mi Carro'
+        );
+
+
+        // Displays all the records, tabs, and options
+        echo $OUTPUT->tabtree($top_row, 'misventas');
+        if (sizeof($products) == 0){
+            echo html_writer::nonempty_tag('h4', 'No estas vendiendo nada.', array('align' => 'left'));
+        }
+        else{
+            echo html_writer::table($products_table);
+        }
+
+        echo html_writer::nonempty_tag("div", $OUTPUT->single_button($url_button, "Poner a la Venta"), array("align" => "left"));
+
     }
 
-echo $OUTPUT->footer();
+    echo $OUTPUT->footer();

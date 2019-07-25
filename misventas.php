@@ -216,7 +216,11 @@
             }
         }
 
-        $url_button = new moodle_url("/local/web_market/vender.php", array("action" => "add"));
+        $url_button = new moodle_url("/local/web_market/vender.php", [
+            "action" => "add",
+            'previous' => 'other',
+            'sale_id' => $sale_id
+            ]);
 
         $top_row = [];
         $top_row[] = new tabobject(
