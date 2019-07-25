@@ -22,11 +22,11 @@
  */
 
     require_once('forms/createform.php');
+    //require_once ($CFG->dirroot."/local/web_market/createforms.php");
     //require_once ('lib/formslib.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
 
-    $addForm = new addproduct();
     $context = context_system::instance();
     $url = new moodle_url('/local/web_market/vender.php');
     $PAGE->set_url($url);
@@ -51,6 +51,8 @@
     echo $OUTPUT->header();
 
     if($action == 'add'){
+
+        $addForm = new addproduct();
         //Form processing and displaying is done here
         if ($addForm->is_cancelled()) {
             //Handle form cancel operation, if cancel button is present on form

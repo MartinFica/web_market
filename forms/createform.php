@@ -30,8 +30,8 @@ require_once ($CFG->libdir . '/formslib.php');
 class addproduct extends moodleform {
 
     //Add elements to form
-    public function definition() {
-        //global $CFG;
+    function definition() {
+        global $DB, $CFG;
 
         $mform = $this->_form;
 
@@ -59,9 +59,8 @@ class addproduct extends moodleform {
     }
 
     //Custom validation should be added here
-    function validation($data, $files) {
+    function validation($data) {
 
-        //global $DB;
         $errors = array();
 
         $name = $data["name"];
