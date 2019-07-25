@@ -22,7 +22,7 @@
  */
 
     require_once ('forms/view_form.php');
-    require_once ('lib/formslib.php');
+    //require_once ('lib/formslib.php');
     require(__DIR__.'/../../config.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
@@ -39,6 +39,8 @@
     $action = optional_param("action", "view", PARAM_TEXT);
     $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
+    $sale_id = optional_param("sale_id", null, PARAM_INT);
+    $detail_id = optional_param("detail_id", null, PARAM_INT);
 
     require_login();
     if (isguestuser()){
@@ -50,11 +52,41 @@
 
     echo $OUTPUT->header();
 
+    $user_id = $USER->id;
+    $record = new stdClass();
+    $record->id = $sale_id;
+    $record->user_id = $user_id;
+    $record->sale_status = '0';
+    $DB->update_record('sale', $record);
+
+    $sql = 'SELECT d.id, d.sale_id, d.product_id ,d.quantity, p.name, p.price, u.username, u.email 
+                FROM {details} d
+                INNER JOIN {product} p
+                ON d.product_id = p.id
+                INNER JOIN {user} u
+                ON p.user_id = u.id
+                WHERE d.sale_id = ?
+            ';
+    $details = $DB->get_records_sql($sql, array($sale_id));
+
+    foreach($details as $detail){
+        $id = $detail->id;
+        $sale_id = $detail->sale_id;
+        $product_id = $detail->product_id;
+        $quantity = $detail->quantity;
+
+        $update = new stdClass();
+        $update -> id = $id;
+        $update -> sale_id = $sale_id;
+        $update -> product_id = $product_id;
+        $update -> quantity = $quantity;
+        $update -> datesold = date('Y-m-d H:i');
+        $DB->update_record('details', $update);
+    }
+
     echo '<td><strong>Compra finalizada</strong></td>
             <br>
             <a href='.new moodle_url('/local/web_market/index.php').' class="btn btn-primary">Volver al inicio</a>
         ';
-
-    updateProducts();
 
     echo $OUTPUT->footer();

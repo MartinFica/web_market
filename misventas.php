@@ -156,7 +156,6 @@
 
     // Delete the selected record
     if ($action == "delete"){
-
         if(!deleteRegister($product_id)){
             print_error("Articulo no existe.");
         }
@@ -256,3 +255,15 @@
         }
 
     echo $OUTPUT->footer();
+
+    function deleteRegister($product_id){
+        global $action;
+        //Borrar venta
+        if ($DB->delete_records("product", array("id" => $product_id))){
+            $action = 'view';
+        }
+        else {
+            return false;
+        }
+        return true;
+    }

@@ -53,7 +53,13 @@
 
     // Delete the selected record
     if ($action == "delete"){
-        $DB->delete_records("details", array("id" => $detail_id));
+        $bool = $DB->delete_records("details", array("id" => $detail_id));
+        if($bool == true){
+            $action = 'view';
+            }
+        elseif($bool == false){
+            print_error("Articulo no existe.");
+            }
         $action = 'view';
     }
 
@@ -112,6 +118,8 @@
                 $delete_url = new moodle_url('/local/web_market/comprar.php',[
                     'action' => 'delete',
                     'detail_id' =>  $detail->id,
+                    'previous' => 'other',
+                    'sale_id' => $sale_id
                     ]);
                 $delete_ic = new pix_icon('t/delete', 'Eliminar');
                 $delete_action = $OUTPUT->action_icon(
@@ -165,9 +173,13 @@
             echo html_writer::nonempty_tag('h4', 'No tienes items en tu carro.', array('align' => 'left'));
         }else{
             echo html_writer::table($details_table);
-            $url= '/local/web_market/procesando.php';
+            $url = new moodle_url('/local/web_market/procesando.php',[
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]);
             echo '<a href='.new moodle_url($url).' class="btn btn-primary">FINALIZAR</a>';
         }
     }
 
     echo $OUTPUT->footer();
+
