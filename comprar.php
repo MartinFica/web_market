@@ -22,7 +22,6 @@
  */
 
     require_once ('forms/view_form.php');
-    require_once ('lib/formslib.php');
     require(__DIR__.'/../../config.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
@@ -40,6 +39,7 @@
     $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
     $sale_id = optional_param("sale_id", null, PARAM_INT);
+    $detail_id = optional_param("detail_id", null, PARAM_INT);
 
     require_login();
     if (isguestuser()){
@@ -52,22 +52,47 @@
     echo $OUTPUT->header();
 
     // Delete the selected record
-    /*if ($action == "delete"){
-        if(!deletefromCart($id)){
-            print_error("Articulo no existe.");
-        }
+    if ($action == "delete"){
+        $DB->delete_records("details", array("id" => $detail_id));
         $action = 'view';
-    }*/
+    }
 
     if($action == 'view'){
 
-        $details = getDetails($sale_id);
+        // Get the user current sale's details
+        $sql = 'SELECT d.id, d.sale_id, d.product_id ,d.quantity, p.name, p.price, u.username, u.email 
+                    FROM {details} d
+                    INNER JOIN {product} p
+                    ON d.product_id = p.id
+                    INNER JOIN {user} u
+                    ON p.user_id = u.id
+                    WHERE d.sale_id = ?
+        ';
+        $details = $DB->get_records_sql($sql, array($sale_id));
+
         $details_table = new html_table();
 
 
         if ($previous = 'confirmed'){
             // Add product to detail
-            addtoCart($product_id,$sale_id);
+            if (!in_array($product_id,$details) and !is_null($product_id)) {
+                $record = new stdClass();
+                $record->sale_id = $sale_id;
+                $record->product_id = $product_id;
+                $record->quantity = 1;
+                $record->date = date('Y-m-d H:i');
+                $DB->insert_record('details', $record);
+            }
+            $previous = 'other';
+            $sql = 'SELECT d.id, d.sale_id, d.product_id ,d.quantity, p.name, p.price, u.username, u.email 
+                    FROM {details} d
+                    INNER JOIN {product} p
+                    ON d.product_id = p.id
+                    INNER JOIN {user} u
+                    ON p.user_id = u.id
+                    WHERE d.sale_id = ?
+            ';
+            $details = $DB->get_records_sql($sql, array($sale_id));
         }
 
         if(sizeof($details) > 0){
@@ -81,25 +106,19 @@
 
             foreach($details as $detail){
                 $id = $detail->id;
-                $elim = 'no';
                 /**
                  *Botón eliminar
                  * */
-                $delete_url = new moodle_url('/local/web_market/comprar.php', [
-                    $elim => 'si',
-                ]);
+                $delete_url = new moodle_url('/local/web_market/comprar.php',[
+                    'action' => 'delete',
+                    'detail_id' =>  $detail->id,
+                    ]);
                 $delete_ic = new pix_icon('t/delete', 'Eliminar');
                 $delete_action = $OUTPUT->action_icon(
                     $delete_url,
                     $delete_ic,
                     new confirm_action('¿No lo desea comprar?')
                 );
-
-                if ($elim == 'si'){
-                    deletefromCart($id);
-                    echo 'eliminado';
-                    $elim = 'no';
-                }
 
                 $details_table->data[] = array(
                     $detail->name,
@@ -114,26 +133,35 @@
         $top_row = [];
         $top_row[] = new tabobject(
             'products',
-            new moodle_url('/local/web_market/index.php'),
-            ' En Venta'
+            new moodle_url('/local/web_market/index.php', [
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]),
+            'En Venta'
         );
 
         $top_row[] = new tabobject(
             'vender',
-            new moodle_url('/local/web_market/misventas.php'),
+            new moodle_url('/local/web_market/misventas.php', [
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]),
             'Mis Ventas'
         );
 
         $top_row[] = new tabobject(
             'carro',
-            new moodle_url('/local/web_market/comprar.php'),
+            new moodle_url('/local/web_market/comprar.php', [
+                'previous' => 'other',
+                'sale_id' => $sale_id
+            ]),
             'Mi Carro'
         );
     }
 
     if ($action == 'view'){
         echo $OUTPUT->tabtree($top_row, 'carro');
-        if (sizeof(getAllmiscompras($sale_id)) == 0){
+        if (sizeof($details) == 0){
             echo html_writer::nonempty_tag('h4', 'No tienes items en tu carro.', array('align' => 'left'));
         }else{
             echo html_writer::table($details_table);

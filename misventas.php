@@ -22,7 +22,6 @@
  */
 
     require_once ('forms/view_form.php');
-    //require_once ('lib/formslib.php');
     require(__DIR__.'/../../config.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
@@ -183,7 +182,6 @@
                 $delete_url = new moodle_url('/local/web_market/misventas.php', [
                     'action' => 'delete',
                     'product_id' =>  $product->id,
-
                 ]);
                 $delete_ic = new pix_icon('t/delete', 'Eliminar');
                 $delete_action = $OUTPUT->action_icon(

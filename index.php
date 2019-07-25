@@ -22,7 +22,6 @@
  */
 
     require_once ('forms/view_form.php');
-    //require_once ('lib/formslib.php');
     require(__DIR__.'/../../config.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
@@ -51,6 +50,33 @@
 
     echo $OUTPUT->header();
 
+    // Getting the sale info
+    $user_id = $USER->id;
+    $sql = 'SELECT s.id, s.user_id, s.sale_status
+                FROM {sale} s
+                WHERE s.sale_status = 1 and s.user_id = ?
+            ';
+    $sale = $DB->get_records_sql($sql, array($user_id));
+
+    //If this is the fist time a user get to the site, it generates a new sale for him
+    if(sizeof($sale) == 0){
+        $record = new stdClass();
+        $record->user_id = $USER->id;
+        $record->sale_status = '1';
+        $DB->insert_record('sale',$record);
+
+        $sql = 'SELECT s.id, s.user_id, s.sale_status
+                    FROM {sale} s
+                    WHERE s.sale_status = 1 and s.user_id = ?
+                ';
+        $sale = $DB->get_records_sql($sql, array($user_id));
+    }
+
+    // Getting the id of the current sale
+    foreach ($sale as $data){
+        $id = $data->id;
+    }
+
     if($action == 'view'){
 
         // Getting the list of the products
@@ -62,33 +88,6 @@
 
         $products = $DB->get_records_sql($sql, null);
         $products_table = new html_table();
-
-        // Getting the sale info
-        $user_id = $USER->id;
-        $sql = 'SELECT s.id, s.user_id, s.sale_status
-                    FROM {sale} s
-                    WHERE s.sale_status = 1 and s.user_id = ?
-        ';
-        $sale = $DB->get_records_sql($sql, array($user_id));
-
-        //If this is the fist time a user get to the site, it generates a new sale for him
-        if(sizeof($sale) == 0){
-            $record = new stdClass();
-            $record->user_id = $USER->id;
-            $record->sale_status = '1';
-            $DB->insert_record('sale',$record);
-
-            $sql = 'SELECT s.id, s.user_id, s.sale_status
-                    FROM {sale} s
-                    WHERE s.sale_status = 1 and s.user_id = ?
-            ';
-            $sale = $DB->get_records_sql($sql, array($user_id));
-        }
-
-        // Getting the id of the current sale
-        foreach ($sale as $data){
-            $id = $data->id;
-        }
 
         // Display of the products
         if(sizeof($products) > 0){
@@ -108,6 +107,7 @@
                     'action' => 'view',
                     'product_id' =>  $product->id,
                     'url' =>  1,
+                    'sale_id' => $id
                 ]);
 
                 $ver_ic = new pix_icon('t/hide', 'View');
