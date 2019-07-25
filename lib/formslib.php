@@ -240,7 +240,6 @@
                     WHERE s.sale_status = 1 and s.user_id = ?
         ';
         $sale = $DB->get_records_sql($sql, array($user_id));
-
         if(sizeof($sale) == 0){
             $sale = newSale();
         }

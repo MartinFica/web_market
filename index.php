@@ -52,9 +52,44 @@
 
     if($action == 'view'){
 
-        $products = getAllProducts();
+        // Getting the list of the products
+        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username
+                    FROM {product} p
+                    INNER JOIN {user} u
+                    ON u.id = p.user_id
+                    ORDER BY p.date DESC';
+
+        $products = $DB->get_records_sql($sql, null);
         $products_table = new html_table();
 
+        // Getting the sale info
+        $user_id = $USER->id;
+        $sql = 'SELECT s.id, s.user_id, s.sale_status
+                    FROM {sale} s
+                    WHERE s.sale_status = 1 and s.user_id = ?
+        ';
+        $sale = $DB->get_records_sql($sql, array($user_id));
+
+        //If this is the fist time a user get to the site, it generates a new sale for him
+        if(sizeof($sale) == 0){
+            $record = new stdClass();
+            $record->user_id = $USER->id;
+            $record->sale_status = '1';
+            $DB->insert_record('sale',$record);
+
+            $sql = 'SELECT s.id, s.user_id, s.sale_status
+                    FROM {sale} s
+                    WHERE s.sale_status = 1 and s.user_id = ?
+            ';
+            $sale = $DB->get_records_sql($sql, array($user_id));
+        }
+
+        // Getting the id of the current sale
+        foreach ($sale as $data){
+            $id = $data->id;
+        }
+
+        // Display of the products
         if(sizeof($products) > 0){
 
             $products_table->head = [
@@ -68,7 +103,7 @@
                 /**
                 *Botón ver
                 * */
-                $ver_url = new moodle_url('/local/web_market/view.php', [
+                $ver_url = new moodle_url('/local/web_market/seedetails.php', [
                     'action' => 'view',
                     'product_id' =>  $product->id,
                     'url' =>  1,
@@ -103,10 +138,6 @@
             'Mis Ventas'
         );
 
-        $sale = getSale();
-        foreach ($sale as $data){
-            $id = $data->id;
-        }
         $top_row[] = new tabobject(
             'carro',
             new moodle_url('/local/web_market/comprar.php', [
@@ -120,7 +151,7 @@
     // Displays all the records, tabs, and options
     if ($action == 'view'){
         echo $OUTPUT->tabtree($top_row, 'products');
-        if (sizeof(getAllProducts()) == 0){
+        if (sizeof($products) == 0){
             echo html_writer::nonempty_tag('h4', 'En este momento no hay articulos a la venta.', array('align' => 'left'));
         }else{
             echo html_writer::table($products_table);
