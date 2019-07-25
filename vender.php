@@ -39,7 +39,6 @@
     $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $sale_id = optional_param("sale_id", null, PARAM_INT);
 
-
     require_login();
     if (isguestuser()){
     die();

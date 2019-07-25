@@ -59,7 +59,7 @@ class addproduct extends moodleform {
     }
 
     //Custom validation should be added here
-    function validation($data) {
+    function validation($data, $files) {
 
         $errors = array();
 

@@ -27,7 +27,7 @@ require(__DIR__.'/../../../config.php');
 //Necesario para desplegar el formulario
 require_once ($CFG->libdir . '/formslib.php');
 
-class edit_form extends moodleform {
+class editform extends moodleform {
 
     //Add elements to form
     public function definition() {
