@@ -22,7 +22,7 @@
  */
 
     require_once ('forms/view_form.php');
-    require_once ('lib/formslib.php');
+    //require_once ('lib/formslib.php');
     require(__DIR__.'/../../config.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
@@ -39,6 +39,7 @@
     $action = optional_param("action", "view", PARAM_TEXT);
     $previous = optional_param("confirmed", "other", PARAM_TEXT);
     $product_id = optional_param("product_id", null, PARAM_INT);
+    $sale_id = optional_param("sale_id", null, PARAM_INT);
 
     require_login();
     if (isguestuser()){
@@ -128,13 +129,19 @@
         $top_row = [];
         $top_row[] = new tabobject(
             'products',
-            new moodle_url('/local/web_market/index.php'),
-            ' En Venta'
+            new moodle_url('/local/web_market/index.php', [
+                'previous' => 'other',
+                'sale_id' => $id
+                ]),
+            'En Venta'
         );
 
         $top_row[] = new tabobject(
             'vender',
-            new moodle_url('/local/web_market/misventas.php'),
+            new moodle_url('/local/web_market/misventas.php', [
+                'previous' => 'other',
+                'sale_id' => $id
+                ]),
             'Mis Ventas'
         );
 
@@ -143,7 +150,7 @@
             new moodle_url('/local/web_market/comprar.php', [
                 'previous' => 'other',
                 'sale_id' => $id
-            ]),
+                ]),
             'Mi Carro'
         );
     }
