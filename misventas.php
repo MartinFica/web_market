@@ -50,14 +50,6 @@
 
     echo $OUTPUT->header();
 
-    // Getting user products
-    $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username
-                FROM {product} p
-                INNER JOIN {user} u
-                ON u.id = p.user_id
-                ORDER BY p.date DESC';
-    $products = $DB->get_records_sql($sql, null);
-
     // Let's user edit his sales
     if($action == 'edit'){
 
@@ -156,7 +148,11 @@
 
     // Delete the selected record
     if ($action == "delete"){
-        if(!deleteRegister($product_id)){
+        $bool = $DB->delete_records("product", array("id" => $product_id));
+        if($bool == true){
+            $action = 'view';
+        }
+        elseif($bool == false){
             print_error("Articulo no existe.");
         }
         $action = 'view';
@@ -164,6 +160,14 @@
 
     // View his sales
     if($action == 'view'){
+
+        // Getting user products
+        $sql = 'SELECT p.id, p.name, p.description, p.price, p.quantity, p.date, p.user_id, u.username
+                FROM {product} p
+                INNER JOIN {user} u
+                ON u.id = p.user_id
+                ORDER BY p.date DESC';
+        $products = $DB->get_records_sql($sql, null);
         $products_table = new html_table();
 
         if(sizeof($products) > 0){
@@ -255,15 +259,3 @@
         }
 
     echo $OUTPUT->footer();
-
-    function deleteRegister($product_id){
-        global $action;
-        //Borrar venta
-        if ($DB->delete_records("product", array("id" => $product_id))){
-            $action = 'view';
-        }
-        else {
-            return false;
-        }
-        return true;
-    }
