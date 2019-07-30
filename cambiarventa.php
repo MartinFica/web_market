@@ -22,7 +22,7 @@
  */
 
     require_once('forms/editform.php');
-    require_once('lib/formslib.php');
+    //require_once('lib/formslib.php');
 
     global $DB, $PAGE, $OUTPUT, $USER;
 

@@ -20,7 +20,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-    require_once ('forms/view_form.php');
+    require_once ('forms/viewform.php');
     //require_once ('lib/formslib.php');
     require(__DIR__.'/../../config.php');
 
